@@ -20,15 +20,19 @@ const sock = io()
 const peerConnection = new RTCPeerConnection(configuration)
 window.connect = peerConnection
 
-peerConnection.addEventListener('connectionstatechange', event => {
+peerConnection.addEventListener('connectionstatechange', (event) => {
     if (peerConnection.connectionState === 'connected') {
+        console.log('Connection Successful')
+        console.log(event)
+    } else {
+        console.log('Connection Failed')
         console.log(event)
     }
 });
 
 sock.on('ice-candidate', async (data) => {
     await peerConnection.addIceCandidate(data.icecandidate)
-    console.log(data)
+    //console.log(data)
 })
 
 sock.on('offer', async (data) => {
@@ -39,13 +43,13 @@ sock.on('offer', async (data) => {
         answerdata: answer,
         origin: document.querySelector('input#origin').value
     })
-    console.log(data)
+    //console.log(data)
 })
 
 sock.on('answer', async (data) => {
     const remoteDesc = new RTCSessionDescription(data.answerdata)
     await peerConnection.setRemoteDescription(remoteDesc)
-    console.log(data)
+    //console.log(data)
 })
 
 peerConnection.onicecandidate = (e) => {
@@ -56,4 +60,10 @@ peerConnection.onicecandidate = (e) => {
             target: document.querySelector('input#target').value
         })
     }
+}
+
+peerConnection.ontrack = async (e) => {
+    const remoteStream = MediaStream()
+    remoteStream.addTrack(e.track, remoteStream)
+    document.querySelector('audio#audio-player').srcObject = remoteStream
 }
