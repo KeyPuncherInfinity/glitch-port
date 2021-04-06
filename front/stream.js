@@ -8,7 +8,7 @@ async function startStream () {
     })
 
     const offer = await peerConnection.createOffer();
-    peerConnection.setLocalDescription(offer)
+    await peerConnection.setLocalDescription(offer)
     sock.emit('offer', {
         offerdata: offer,
         target: document.querySelector('input#target').value

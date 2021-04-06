@@ -2,9 +2,15 @@ const configuration = {
     'iceServers' : [
         {
             'urls' : 'stun:stun.l.google.com:19302'
+        },
+        {
+            'urls' : 'turn:numb.viagenie.ca:3478',
+            username : 'infini7y.beyond@gmail.com',
+            credential : 'abdul'
         }
     ]
 }
+
 
 
 document.querySelector('button#start-record').addEventListener('click', () => {
@@ -30,6 +36,7 @@ peerConnection.addEventListener('connectionstatechange', (event) => {
     }
 });
 
+
 sock.on('ice-candidate', async (data) => {
     await peerConnection.addIceCandidate(data.icecandidate)
     //console.log(data)
@@ -37,8 +44,13 @@ sock.on('ice-candidate', async (data) => {
 
 sock.on('offer', async (data) => {
     peerConnection.setRemoteDescription(new RTCSessionDescription(data.offerdata))
+
+    window.recordingmedia.getTracks().forEach(track => {
+        window.connect.addTrack(track, window.recordingmedia)
+    })
+
     const answer = await peerConnection.createAnswer()
-    peerConnection.setLocalDescription(answer)
+    await peerConnection.setLocalDescription(answer)
     sock.emit('answer', {
         answerdata: answer,
         origin: document.querySelector('input#origin').value
@@ -63,7 +75,7 @@ peerConnection.onicecandidate = (e) => {
 }
 
 peerConnection.ontrack = async (e) => {
-    const remoteStream = MediaStream()
+    const remoteStream = new MediaStream()
     remoteStream.addTrack(e.track, remoteStream)
     document.querySelector('audio#audio-player').srcObject = remoteStream
 }
