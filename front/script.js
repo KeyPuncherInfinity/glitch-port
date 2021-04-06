@@ -29,6 +29,7 @@ window.connect = peerConnection
 peerConnection.addEventListener('connectionstatechange', (event) => {
     if (peerConnection.connectionState === 'connected') {
         console.log('Connection Successful')
+        window.dc.send('hello')
         //console.log(event)
     } else {
         console.log('Connection Failed')

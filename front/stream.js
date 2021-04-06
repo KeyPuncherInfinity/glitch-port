@@ -18,8 +18,6 @@ async function startStream () {
         console.log(mess)
     }
 
-    datachannel.send('hello')
-
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer)
     sock.emit('offer', {
