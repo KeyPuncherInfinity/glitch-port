@@ -62,18 +62,6 @@ sock.on('answer', async (data) => {
     const remoteDesc = new RTCSessionDescription(data.answerdata)
     await peerConnection.setRemoteDescription(remoteDesc)
 
-    const datachannel = peerConnection.createDataChannel('channel')
-    window.dc = datachannel
-
-    datachannel.onopen = () => {
-        console.log('Channel Ready')
-    }
-
-    datachannel.onmessage = (mess) => {
-        console.log(mess)
-    }
-
-    datachannel.send('hello')
     //console.log(data)
 })
 
@@ -95,6 +83,8 @@ peerConnection.ontrack = async (e) => {
 
 peerConnection.ondatachannel = (e) => {
     const datachannel = e.channel
+    window.dc = datachannel
+
     datachannel.onopen = () => {
         console.log('Channel Ready')
     }
