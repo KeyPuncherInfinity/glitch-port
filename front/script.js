@@ -26,16 +26,15 @@ const sock = io()
 const peerConnection = new RTCPeerConnection(configuration)
 window.connect = peerConnection
 
-peerConnection.addEventListener('connectionstatechange', (event) => {
+peerConnection.connectionstatechange = (event) => {
     if (peerConnection.connectionState === 'connected') {
         console.log('Connection Successful')
-        window.dc.send('hello')
         //console.log(event)
     } else {
         console.log('Connection Failed')
         //console.log(event)
     }
-});
+};
 
 
 sock.on('ice-candidate', async (data) => {
