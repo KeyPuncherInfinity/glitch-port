@@ -29,10 +29,10 @@ window.connect = peerConnection
 peerConnection.addEventListener('connectionstatechange', (event) => {
     if (peerConnection.connectionState === 'connected') {
         console.log('Connection Successful')
-        console.log(event)
+        //console.log(event)
     } else {
         console.log('Connection Failed')
-        console.log(event)
+        //console.log(event)
     }
 });
 
@@ -61,6 +61,19 @@ sock.on('offer', async (data) => {
 sock.on('answer', async (data) => {
     const remoteDesc = new RTCSessionDescription(data.answerdata)
     await peerConnection.setRemoteDescription(remoteDesc)
+
+    const datachannel = peerConnection.createDataChannel('channel')
+    window.dc = datachannel
+
+    datachannel.onopen = () => {
+        console.log('Channel Ready')
+    }
+
+    datachannel.onmessage = (mess) => {
+        console.log(mess)
+    }
+
+    datachannel.send('hello')
     //console.log(data)
 })
 
@@ -78,4 +91,14 @@ peerConnection.ontrack = async (e) => {
     const remoteStream = new MediaStream()
     remoteStream.addTrack(e.track, remoteStream)
     document.querySelector('audio#audio-player').srcObject = remoteStream
+}
+
+peerConnection.ondatachannel = (e) => {
+    const datachannel = e.channel
+    datachannel.onopen = () => {
+        console.log('Channel Ready')
+    }
+    datachannel.onmessage = (mess) => {
+        console.log(mess)
+    }
 }
